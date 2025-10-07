@@ -1,0 +1,80 @@
+<script>
+const API_URL = "https://impo-zb59.onrender.com"; // Your Render backend URL
+
+// Handle registration
+async function registerUser() {
+  const name = document.getElementById("name").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const message = document.getElementById("message");
+
+  message.textContent = "";
+
+  if (!name || !password || !phone) {
+    message.textContent = "Please fill all fields!";
+    message.style.color = "red";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password, phone }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      message.textContent = `Server error: ${errorData}`;
+      message.style.color = "red";
+      return;
+    }
+
+    const data = await response.json();
+    message.textContent = "✅ Account created successfully!";
+    message.style.color = "green";
+
+  } catch (error) {
+    console.error(error);
+    message.textContent = `❌ Error: ${error.message}`;
+    message.style.color = "red";
+  }
+}
+
+// Handle login
+async function loginUser() {
+  const name = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  const message = document.getElementById("loginMessage");
+
+  message.textContent = "";
+
+  if (!name || !password) {
+    message.textContent = "Please fill all fields!";
+    message.style.color = "red";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      message.textContent = "✅ Login successful!";
+      message.style.color = "green";
+    } else {
+      message.textContent = `❌ ${data.error || "Invalid credentials"}`;
+      message.style.color = "red";
+    }
+  } catch (error) {
+    console.error(error);
+    message.textContent = `❌ Error: ${error.message}`;
+    message.style.color = "red";
+  }
+}
+</script>

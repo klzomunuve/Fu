@@ -1,91 +1,178 @@
-<script>
-const API_URL = "https://impo-zb59.onrender.com"; // Your Render backend URL
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academy Portal</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(120deg, #4f46e5, #6ee7b7);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 350px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+    h2 {
+      color: #4f46e5;
+      margin-bottom: 1.2rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1rem;
+    }
+    input:focus {
+      border-color: #4f46e5;
+    }
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background: #4f46e5;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #4338ca;
+    }
+    p {
+      margin-top: 0.8rem;
+      font-size: 0.9rem;
+    }
+    .switch {
+      color: #4f46e5;
+      cursor: pointer;
+    }
+    #message {
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="registerBox">
+    <h2>Create Account</h2>
+    <input id="name" type="text" placeholder="Full Name" />
+    <input id="telephone" type="text" placeholder="Phone Number" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="registerUser()">Register</button>
+    <p id="message"></p>
+    <p>Already have an account? <span class="switch" onclick="toggleForms()">Login</span></p>
+  </div>
 
-// Handle registration
-async function registerUser() {
-  const name = document.getElementById("name").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const message = document.getElementById("message");
+  <div class="container" id="loginBox" style="display:none;">
+    <h2>Login</h2>
+    <input id="loginTelephone" type="text" placeholder="Phone Number" />
+    <input id="loginPassword" type="password" placeholder="Password" />
+    <button onclick="loginUser()">Login</button>
+    <p id="loginMessage"></p>
+    <p>Don't have an account? <span class="switch" onclick="toggleForms()">Register</span></p>
+  </div>
 
-  message.textContent = "";
+  <script>
+    // ✅ Your backend Render URL
+    const API_URL = "https://impo-zb59.onrender.com";
 
-  if (!name || !password || !phone) {
-    message.textContent = "Please fill all fields!";
-    message.style.color = "red";
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, password, phone }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      message.textContent = `Server error: ${errorData}`;
-      message.style.color = "red";
-      return;
+    // Toggle between Register and Login forms
+    function toggleForms() {
+      const reg = document.getElementById("registerBox");
+      const log = document.getElementById("loginBox");
+      reg.style.display = reg.style.display === "none" ? "block" : "none";
+      log.style.display = log.style.display === "none" ? "block" : "none";
     }
 
-    const data = await response.json();
-    message.textContent = "✅ Account created successfully!";
-    message.style.color = "green";
+    // Register function
+    async function registerUser() {
+      const name = document.getElementById("name").value.trim();
+      const telephone = document.getElementById("telephone").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const message = document.getElementById("message");
+      message.textContent = "";
 
-  } catch (error) {
-    console.error(error);
-    message.textContent = `❌ Error: ${error.message}`;
-    message.style.color = "red";
-  }
-}
+      if (!name || !telephone || !password) {
+        message.textContent = "Please fill all fields!";
+        message.style.color = "red";
+        return;
+      }
 
-// Handle login
-async function loginUser() {
-  const name = document.getElementById("loginName").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
-  const message = document.getElementById("loginMessage");
+      try {
+        const response = await fetch(`${API_URL}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, telephone, password }),
+        });
 
-  message.textContent = "";
-
-  if (!name || !password) {
-    message.textContent = "Please fill all fields!";
-    message.style.color = "red";
-    return;
-  }
-
-  try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, password }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      message.textContent = "✅ Login successful!";
-      message.style.color = "green";
-    } else {
-      message.textContent = `❌ ${data.error || "Invalid credentials"}`;
-      message.style.color = "red";
+        const data = await response.json();
+        if (response.ok) {
+          message.textContent = "✅ " + data.message;
+          message.style.color = "green";
+          setTimeout(() => toggleForms(), 1000);
+        } else {
+          message.textContent = "❌ " + data.message;
+          message.style.color = "red";
+        }
+      } catch (error) {
+        message.textContent = "❌ Network error: " + error.message;
+        message.style.color = "red";
+      }
     }
-  } catch (error) {
-    console.error(error);
-    message.textContent = `❌ Error: ${error.message}`;
-    message.style.color = "red";
-  }
-}<!-- Register Form -->
-<input id="name" type="text" placeholder="Name" />
-<input id="password" type="password" placeholder="Password" />
-<input id="phone" type="text" placeholder="Phone" />
-<button onclick="registerUser()">Sign Up</button>
-<p id="message"></p>
 
-<!-- Login Form -->
-<input id="loginName" type="text" placeholder="Name" />
-<input id="loginPassword" type="password" placeholder="Password" />
-<button onclick="loginUser()">Login</button>
-<p id="loginMessage"></p>
-</script>
+    // Login function
+    async function loginUser() {
+      const telephone = document.getElementById("loginTelephone").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const message = document.getElementById("loginMessage");
+      message.textContent = "";
+
+      if (!telephone || !password) {
+        message.textContent = "Please fill all fields!";
+        message.style.color = "red";
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telephone, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          message.textContent = "✅ Login successful!";
+          message.style.color = "green";
+        } else {
+          message.textContent = "❌ " + data.message;
+          message.style.color = "red";
+        }
+      } catch (error) {
+        message.textContent = "❌ Network error: " + error.message;
+        message.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>

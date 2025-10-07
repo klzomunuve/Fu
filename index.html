@@ -76,5 +76,16 @@ async function loginUser() {
     message.textContent = `❌ Error: ${error.message}`;
     message.style.color = "red";
   }
-}
+}<!-- Register Form -->
+<input id="name" type="text" placeholder="Name" />
+<input id="password" type="password" placeholder="Password" />
+<input id="phone" type="text" placeholder="Phone" />
+<button onclick="registerUser()">Sign Up</button>
+<p id="message"></p>
+
+<!-- Login Form -->
+<input id="loginName" type="text" placeholder="Name" />
+<input id="loginPassword" type="password" placeholder="Password" />
+<button onclick="loginUser()">Login</button>
+<p id="loginMessage"></p>
 </script>
